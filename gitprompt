@@ -1,0 +1,92 @@
+#! /bin/bash
+
+## SETTINGS ##
+__GP_DO_FETCH="no"
+
+## COLOURS - OLD ##
+Cyan="\[\033[0;36m\]"
+Yellow="\[\033[0;33m\]"
+Black="\[\033[0;30m\]"
+On_Green="\[\033[42m\]"
+On_Red="\[\033[41m\]"
+BGreen="\[\033[1;32m\]"
+Green="\[\033[0;32m\]"
+NC="\[\033[0m\]"
+
+## COLOURS - NEW (NOT USED YET) ##
+__ts_color="\[\033[0;32m\]"               # Green
+__uah_color="\[\033[0;36m\]"              # Cyan
+__cl_color="\[\033[0;33m\]"               # Yellow
+__gb_dirty_bg_color="\[\033[41m\]"        # Red background
+__gb_dirty_text_color="\[\033[0;30m\]"    # Black
+__gb_clean_bg_color="\[\033[42m\]"        # Green background
+__gb_clean_text_color="\[\033[0;30m\]"    # Black
+__pt_color="\[\033[1;32m\]"               # Emphasised green
+__reset_color="\[\033[0m\]"               # No colour
+
+## OTHER VARIABLES ##
+PathShort="\w"
+Time12h="\T"
+
+## SUPPORT FUNCTIONS ##
+git_ref_name() {
+    echo $(git status 2> /dev/null | grep -o "\(\(On branch\|HEAD detached\).*\)" | sed -r -e "s~(On branch|HEAD detached at) (.*)~\2~g")
+}
+
+git_branch_status() {
+    if [ "yes" == "${__GP_DO_FETCH}" ] ; then
+        git_initial_fetch 2> /dev/null;
+    fi;
+    thing=""$(git status)
+    echo $(echo $thing | git_branch_position; echo $thing | git_branch_diverged; git_branch_files "$thing";) | sed -r -e "s~ ~|~g"
+}
+
+git_branch_position() {
+    grep -o -e "\(Your branch is \(behind\|ahead\).*\)" | sed -r -e "s~Your branch is (b|a)(ehind|head of) '[^']+' by ([0-9]+) .*~\1\3~g"
+}
+
+git_branch_diverged() {
+    grep -o -e "and have [0-9]* and [0-9]* .*" | sed -r -e "s|and have ([0-9]+) and ([0-9]+).*|a\1b\2|g"
+}
+
+git_branch_files() {
+    added=$(echo $1 | grep -c ".*added:.*")
+    added=$(( $added + $(echo $1 | grep -c ".*new file:.*") ))
+    modified=$(echo $1 | grep -c ".*modified:.*")
+    deleted=$(echo $1 | grep -c ".*deleted:.*")
+    # untracked=$(echo $1 | grep -o ".*Untracked.*" | sed -r -e "s~.*Untracked[^\)]*\) (.*)( nothing added to commit.*)*~\1~" | sed -r -e "s~ ~\n~g" | grep -c "[a-zA-Z0-9\-\_\.\/]*")
+    untracked=$(echo $1 | grep -c ".*Untracked.*")
+    out=""
+    if [ $added -gt 0 ] ; then out=$out"+"$added; fi ;
+    if [ $modified -gt 0 ] ; then out=$out"~"$modified; fi ;
+    if [ $deleted -gt 0 ] ; then out=$out"-"$deleted; fi ;
+    # if [ $untracked -gt 0 ] ; then out=$out"/"$untracked; fi ;
+    if [ $untracked -gt 0 ] ; then out=$out"/U"; fi ;
+    echo "$out";
+}
+
+## THE MAGIC ##
+setup_prompt() {
+    local __user_and_host="$Cyan\u@\h"
+    local __cur_location=$Yellow$PathShort
+    # local __git_branch_name=""'$(git branch 2> /dev/null | grep -o -e "[^\*]*\* \([^\*]*\)" | sed -r -e "s/\* //g")'
+    local __git_branch_name=""'$(git_ref_name)'
+    local __git_branch_status=""'$(git_branch_status)'
+    local __git_branch=$Black'$(git branch &>/dev/null;\
+if [ $? -eq 0 ]; then \
+  echo "$(echo `git status` | grep -o "\(Your branch \(is \(behind\|ahead\)\|and\)\|Untracked\|Changes\).*" > /dev/null 2>&1; \
+  if [ "$?" -eq "0" ]; then \
+    # @4 - Changes to working tree
+    echo " '$On_Red'"$(printf "{%s|%s}" "'$__git_branch_name'" "'$__git_branch_status'"); \
+  else \
+    # @5 - Clean repository - nothing to commit
+    echo " '$On_Green'"$(printf "(%s)" "'$__git_branch_name'"); \
+  fi)'$NC'"; \
+else \
+  # @2 - Prompt when not in GIT repo
+  echo "'$NC'"; \
+fi)'
+    local __prompt_tail="${BGreen}o_O?"
+    export PS1="\n$Green[$Time12h] $__user_and_host: $__cur_location $__git_branch\n$__prompt_tail$NC "
+}
+setup_prompt
