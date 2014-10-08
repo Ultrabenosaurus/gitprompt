@@ -3,6 +3,15 @@ Yet Another Git-Focused Shell Prompt Customisation Script
 
 Does exactly what it says on the tin.
 
+## Contents ##
+
+1. [Rationale](#why-there-are-too-many-already)
+2. [Example Output](#okay-fine-lets-see-it-then)
+3. [Output Explained](#looks-cool-what-do-the-things-mean)
+4. [Sources](#as-if-you-did-this-all-yourself)
+5. [What's Next?](#to-do)
+6. [License](#license)
+
 ## WHY?! THERE ARE TOO MANY ALREADY!! ##
 
 Well, you see, I'm on Windows. Using the bash environment that came with Git 1.9.4-preview20140611 (I think it's MINGW or something) which isn't entirely compatible with a whole load of stuff available in the proper Linux bash.
@@ -17,37 +26,65 @@ Finally, I am yet to find one that is extensible. They're all very procedural, a
 
 *Unfortunately, this is currently not as "modular" as the Git aspects of the script. I'm planning on updating it soon to be more flexible in that respect as well.
 
+[Top](#yet-another-git-focused-shell-prompt-customisation-script)
+
 ## Okay, fine, lets see it then... ##
 
 ![gitprompt example](http://puu.sh/c41OY/f2bd7e4740.png)
 
+[Top](#yet-another-git-focused-shell-prompt-customisation-script)
+
 ## Looks cool, what do the things mean? ##
+
+There 3 aspects of the output (5 including colours) that change depending on your branch's status:
 
 __Brackets__
 
-* `(branch)` ~ normal round brackets mean that, as far as I can tell, you're completely in-sync with `origin`
-* `{branch}` ~ curly braces mean that something is different compared with `origin`, hopefully there'll be a flag as below
+* `(branch)` ~ round brackets mean that, as far as I can tell, you're completely in-sync with `origin`
+* `{branch}` ~ curly braces mean that something is different compared with `origin`
 
-__Branch Status__
+__Commits__
 
 * `a#` ~ `a` stands for "ahead" and `#` is by how many commits
 * `b#` ~ `b` stands for "behind" and `#` is by how many commits
 * if you are "diverged" according to Git-speak you'll see something like `a2b1`
 
-__File Status__
+__Files__
 
-* `/U` ~ there are untracked objects present (haven't figured out how to count them, yet)
 * `+#` ~ how many new files are going to be added by the commit
 * `-#` ~ how many files are going to be deleted by the commit
+* `r#` ~ how many files are going to be renamed by the commit
 * `~#` ~ how many files are going to be modified by the commit
+* `/#` ~ the number of untracked objects present
+
+[Top](#yet-another-git-focused-shell-prompt-customisation-script)
+
+## As if you did this all yourself! ##
+
+Actually, you're right.
+
+I was inspired by the awesomeness of bash itself and the abundance of existing prompt customisation scripts/tutorials available.
+
+I heavily referenced online manuals, guides and StackOverflow questions to help negate my lack of bash knowledge.
+
+And the main `if` block that determines whether or not your working directory is clean is a modified version of the one found in [MediaDoneRight's "Ultimate GIT PS1 bash prompt" article](http://mediadoneright.com/content/ultimate-git-ps1-bash-prompt). I am also using `Time12h` and `PathShort` from their article, as I had no idea such handy flags existed.
+
+Although the colour codes I'm using look identical to those in MDR's post, I actually already had them. I can't remember where I got them from, though, sorry. Just use MDR's as a reference if you don't like the ones I've used.
+
+[Top](#yet-another-git-focused-shell-prompt-customisation-script)
 
 ## To Do ##
 
-* write customisation section in README
+* update screenshot now I figured out how to count untracked
+* write tributes/sources section in README
 * make colour names more meaningful
+* write customisation section in README
 * put non-Git stuff into functions
 * move main branch `if` block into function
+* add toggle for running `fetch`?
 * OPTIMISE!!
+
+[Top](#yet-another-git-focused-shell-prompt-customisation-script)
 
 ## License ##
 
@@ -58,3 +95,5 @@ As usual with my work, this project is available under the BSD 3-Clause license.
 * You include a copy of said license and attribution with any and all redistributions of this code, including derivative works.
 
 For more details, read the included LICENSE.md file or read about it on [opensource.org](http://opensource.org/licenses/BSD-3-Clause).
+
+[Top](#yet-another-git-focused-shell-prompt-customisation-script)
