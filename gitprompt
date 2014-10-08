@@ -3,7 +3,7 @@
 ## SETTINGS ##
 __GP_DO_FETCH="no"
 
-## COLOURS - OLD ##
+## COLOURS - TO BE REPLACED ##
 Cyan="\[\033[0;36m\]"
 Yellow="\[\033[0;33m\]"
 Black="\[\033[0;30m\]"
@@ -37,7 +37,7 @@ git_branch_status() {
     if [ "yes" == "${__GP_DO_FETCH}" ] ; then
         git_initial_fetch 2> /dev/null;
     fi;
-    thing=""$(git status)
+    local thing=""$(git status)
     echo $(echo $thing | git_branch_position; echo $thing | git_branch_diverged; git_branch_files "$thing";) | sed -r -e "s~ ~|~g"
 }
 
@@ -50,18 +50,19 @@ git_branch_diverged() {
 }
 
 git_branch_files() {
-    added=$(echo $1 | grep -c ".*added:.*")
-    added=$(( $added + $(echo $1 | grep -c ".*new file:.*") ))
-    modified=$(echo $1 | grep -c ".*modified:.*")
-    deleted=$(echo $1 | grep -c ".*deleted:.*")
-    # untracked=$(echo $1 | grep -o ".*Untracked.*" | sed -r -e "s~.*Untracked[^\)]*\) (.*)( nothing added to commit.*)*~\1~" | sed -r -e "s~ ~\n~g" | grep -c "[a-zA-Z0-9\-\_\.\/]*")
-    untracked=$(echo $1 | grep -c ".*Untracked.*")
-    out=""
+    local added=$(echo $1 | sed -r -e "s~(added:)~\n\1~g" | grep -c ".*added:.*")
+    local added=$(( $added + $(echo $1 | sed -r -e "s~(new file:)~\n\1~g" | grep -c ".*new file:.*") ))
+    local deleted=$(echo $1 | sed -r -e "s~(deleted:)~\n\1~g" | grep -c ".*deleted:.*")
+    local modified=$(echo $1 | sed -r -e "s~(modified:)~\n\1~g" | grep -c ".*modified:.*")
+    local renamed=$(echo $1 | sed -r -e "s~(renamed:)~\n\1~g" | grep -c ".*renamed:.*")
+    local untracked=$(echo $1 | grep -o ".*Untracked.*" | sed -r -e "s~[\s]*(no changes|nothing added).*~~g" | sed -r -e "s~[^\)]*\)~~g" | sed -r -e "s~[ ]*([^ ]*)[ ]*~\1\n~g" | grep -c "[^\s]*")
+
+    local out=""
     if [ $added -gt 0 ] ; then out=$out"+"$added; fi ;
-    if [ $modified -gt 0 ] ; then out=$out"~"$modified; fi ;
     if [ $deleted -gt 0 ] ; then out=$out"-"$deleted; fi ;
-    # if [ $untracked -gt 0 ] ; then out=$out"/"$untracked; fi ;
-    if [ $untracked -gt 0 ] ; then out=$out"/U"; fi ;
+    if [ $modified -gt 0 ] ; then out=$out"~"$modified; fi ;
+    if [ $renamed -gt 0 ] ; then out=$out"r"$renamed; fi ;
+    if [ $untracked -gt 0 ] ; then out=$out"/"$(( $untracked - 1 )); fi ;
     echo "$out";
 }
 
@@ -69,7 +70,6 @@ git_branch_files() {
 setup_prompt() {
     local __user_and_host="$Cyan\u@\h"
     local __cur_location=$Yellow$PathShort
-    # local __git_branch_name=""'$(git branch 2> /dev/null | grep -o -e "[^\*]*\* \([^\*]*\)" | sed -r -e "s/\* //g")'
     local __git_branch_name=""'$(git_ref_name)'
     local __git_branch_status=""'$(git_branch_status)'
     local __git_branch=$Black'$(git branch &>/dev/null;\
