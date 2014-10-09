@@ -30,7 +30,9 @@ Finally, I am yet to find one that is extensible. They're all very procedural, a
 
 ## Okay, fine, lets see it then... ##
 
-![gitprompt example](http://puu.sh/c41OY/f2bd7e4740.png)
+![gitprompt example](http://puu.sh/c5EaM/d55b4e6f68.png)
+
+That's just a little snippet of the example scenario I went through. [You can find the full image here](http://puu.sh/c5DY3/3ca55766cb.png).
 
 [Top](#yet-another-git-focused-shell-prompt-customisation-script)
 
@@ -76,12 +78,13 @@ Although the colour codes I'm using look identical to those in MDR's post, I act
 
 ## To Do ##
 
-* update screenshot
 * make colour names more meaningful
 * write customisation section in README
 * put non-Git stuff into functions
 * move main branch `if` block into function
 * add toggle for running `fetch`?
+* test on Linux
+    * make it work on Linux!!!
 * OPTIMISE!!
 
 [Top](#yet-another-git-focused-shell-prompt-customisation-script)
