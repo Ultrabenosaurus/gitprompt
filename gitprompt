@@ -53,16 +53,18 @@ git_branch_files() {
     local added=$(echo $1 | sed -r -e "s~(added:)~\n\1~g" | grep -c ".*added:.*")
     local added=$(( $added + $(echo $1 | sed -r -e "s~(new file:)~\n\1~g" | grep -c ".*new file:.*") ))
     local deleted=$(echo $1 | sed -r -e "s~(deleted:)~\n\1~g" | grep -c ".*deleted:.*")
-    local modified=$(echo $1 | sed -r -e "s~(modified:)~\n\1~g" | grep -c ".*modified:.*")
+    local modified=$(echo $1 | sed -r -e "s~([^h] modified:)~\n\1~g" | grep -c ".*modified:.*")
     local renamed=$(echo $1 | sed -r -e "s~(renamed:)~\n\1~g" | grep -c ".*renamed:.*")
     local untracked=$(echo $1 | grep -o ".*Untracked.*" | sed -r -e "s~[\s]*(no changes|nothing added).*~~g" | sed -r -e "s~[^\)]*\)~~g" | sed -r -e "s~[ ]*([^ ]*)[ ]*~\1\n~g" | grep -c "[^\s]*")
+    local conflicts=$(echo $1 | sed -r -e "s~(both modified:)~\n\1~g" | grep -c ".*both modified:.*")
 
     local out=""
     if [ $added -gt 0 ] ; then out=$out"+"$added; fi ;
     if [ $deleted -gt 0 ] ; then out=$out"-"$deleted; fi ;
     if [ $modified -gt 0 ] ; then out=$out"~"$modified; fi ;
-    if [ $renamed -gt 0 ] ; then out=$out"r"$renamed; fi ;
-    if [ $untracked -gt 0 ] ; then out=$out"/"$(( $untracked - 1 )); fi ;
+    if [ $renamed -gt 0 ] ; then out=$out"/"$renamed; fi ;
+    if [ $untracked -gt 0 ] ; then out=$out"*"$(( $untracked - 1 )); fi ;
+    if [ $conflicts -gt 0 ] ; then out=$out"x"$conflicts; fi ;
     echo "$out";
 }
 

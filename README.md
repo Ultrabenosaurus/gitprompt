@@ -53,9 +53,10 @@ __Files__
 
 * `+#` ~ how many new files are going to be added by the commit
 * `-#` ~ how many files are going to be deleted by the commit
-* `r#` ~ how many files are going to be renamed by the commit
 * `~#` ~ how many files are going to be modified by the commit
-* `/#` ~ the number of untracked objects present
+* `/#` ~ how many files are going to be renamed by the commit
+* `*#` ~ the number of untracked objects present
+* `x#` ~ the number of conflicted files
 
 [Top](#yet-another-git-focused-shell-prompt-customisation-script)
 
@@ -75,8 +76,7 @@ Although the colour codes I'm using look identical to those in MDR's post, I act
 
 ## To Do ##
 
-* update screenshot now I figured out how to count untracked
-* write tributes/sources section in README
+* update screenshot
 * make colour names more meaningful
 * write customisation section in README
 * put non-Git stuff into functions
