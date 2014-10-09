@@ -1,4 +1,5 @@
 #! /bin/bash
+# conflict test
 
 ## SETTINGS ##
 __GP_DO_FETCH="no"
